@@ -13,80 +13,82 @@ import io.palaima.smoothbluetooth.SmoothBluetooth;
  * Created by szyme on 22.01.2017.
  */
 
-public class AuraboxService {
+public class AuraboxService implements SmoothBluetooth.Listener {
     private static final String TAG = "aurabox-debug";
     Context context;
     SmoothBluetooth smoothBluetooth;
-    SmoothBluetooth.Listener listener = new SmoothBluetooth.Listener() {
-        @Override
-        public void onBluetoothNotSupported() {
+    Runnable onConnected;
 
+    @Override
+    public void onBluetoothNotSupported() {
+
+    }
+
+    @Override
+    public void onBluetoothNotEnabled() {
+
+    }
+
+    @Override
+    public void onConnecting(Device device) {
+        Log.d(TAG, device.getName() + " connecting...");
+
+    }
+
+    @Override
+    public void onConnected(Device device) {
+        Log.d(TAG, device.getName() + " connected");
+        onConnected.run();
+    }
+
+    @Override
+    public void onDisconnected() {
+
+    }
+
+    @Override
+    public void onConnectionFailed(Device device) {
+        Log.d(TAG, device.getName() + " cennection failed");
+    }
+
+    @Override
+    public void onDiscoveryStarted() {
+
+    }
+
+    @Override
+    public void onDiscoveryFinished() {
+
+    }
+
+    @Override
+    public void onNoDevicesFound() {
+        Log.d(TAG, "No devices paierd");
+    }
+
+    @Override
+    public void onDevicesFound(final List<Device> deviceList, SmoothBluetooth.ConnectionCallback connectionCallback) {
+        Log.d(TAG, "Paired devices: ");
+        for (Device device : deviceList) {
+            Log.d(TAG, "\t" + device.getName());
         }
+        Device device = deviceList.get(0);
+        connectionCallback.connectTo(device);
 
-        @Override
-        public void onBluetoothNotEnabled() {
+    }
 
-        }
+    @Override
+    public void onDataReceived(int data) {
 
-        @Override
-        public void onConnecting(Device device) {
-            Log.d(TAG, device.getName() + " connecting...");
-
-        }
-
-        @Override
-        public void onConnected(Device device) {
-            Log.d(TAG, device.getName() + " connected");
-        }
-
-        @Override
-        public void onDisconnected() {
-
-        }
-
-        @Override
-        public void onConnectionFailed(Device device) {
-            Log.d(TAG, device.getName() + " cennection failed");
-        }
-
-        @Override
-        public void onDiscoveryStarted() {
-
-        }
-
-        @Override
-        public void onDiscoveryFinished() {
-
-        }
-
-        @Override
-        public void onNoDevicesFound() {
-            Log.d(TAG, "No devices paierd");
-        }
-
-        @Override
-        public void onDevicesFound(final List<Device> deviceList, SmoothBluetooth.ConnectionCallback connectionCallback) {
-            Log.d(TAG, "Paired devices: ");
-            for (Device device : deviceList) {
-                Log.d(TAG, "\t" + device.getName());
-            }
-            Device device = deviceList.get(0);
-            connectionCallback.connectTo(device);
-
-        }
-
-        @Override
-        public void onDataReceived(int data) {
-
-        }
-    };
+    }
 
     public AuraboxService(Context context) {
         this.context = context;
-        smoothBluetooth = new SmoothBluetooth(context, SmoothBluetooth.ConnectionTo.OTHER_DEVICE, SmoothBluetooth.Connection.INSECURE, listener);
     }
 
-    public void connect() {
+    public void connect(Runnable r) {
+        this.onConnected = r;
+        smoothBluetooth = new SmoothBluetooth(context, SmoothBluetooth.ConnectionTo.OTHER_DEVICE, SmoothBluetooth.Connection.INSECURE, this);
         smoothBluetooth.tryConnection();
 //        sendButton.setText(device.getName());
 //        sendButton.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +104,7 @@ public class AuraboxService {
     }
 
     public void send(AuraboxBitmap bitmap) {
+        Log.d(TAG,"Sending "+bitmap.toString());
         byte[] data = bitmap.toByteArray();
         data = addPreamble(data);
         data = addChecksum(data);
@@ -159,9 +162,9 @@ public class AuraboxService {
         byte[] result = new byte[payload.length + escapeCount];
         int i = 0;
         for (byte b : payload) {
-            if (b >= 0x01 && b < 0x03) {
+            if (b >= 0x01 && b <= 0x03) {
                 result[i] = 0x03;
-                result[i + 1] = (byte) (0x01 + b);
+                result[i + 1] = (byte) (0x03 + b);
                 i++;
             } else {
                 result[i] = b;

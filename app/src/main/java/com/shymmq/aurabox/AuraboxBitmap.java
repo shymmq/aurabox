@@ -33,6 +33,19 @@ public class AuraboxBitmap {
 
     }
 
+    public AuraboxBitmap(boolean[][] cells) {
+        this(cells, 0, 0);
+    }
+
+    public AuraboxBitmap(boolean[][] cells, int startX, int startY) {
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                setPixel(x, y, cells[y + startY][x + startX]);
+            }
+        }
+    }
+
+
     public byte[] toByteArray() {
         byte[] result = new byte[50];
         int i = 0;
@@ -45,6 +58,11 @@ public class AuraboxBitmap {
             }
         }
         return result;
+    }
+
+
+    public AuraboxBitmap setPixel(int x, int y, boolean on) {
+        return setPixel(x, y, on ? Color.WHITE : Color.BLACK);
     }
 
     public AuraboxBitmap setPixel(int x, int y, Color color) {
