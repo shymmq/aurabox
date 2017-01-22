@@ -19,6 +19,20 @@ public class AuraboxBitmap {
         fill(color);
     }
 
+    public AuraboxBitmap(String source) {
+        int i = 0;
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x += 2) {
+                int code1 = source.charAt(i) - '0';
+                int code2 = source.charAt(i + 1) - '0';
+                setPixel(x + 1, y, Color.fromCode(code1));
+                setPixel(x, y, Color.fromCode(code2));
+                i += 2;
+            }
+        }
+
+    }
+
     public byte[] toByteArray() {
         byte[] result = new byte[50];
         int i = 0;

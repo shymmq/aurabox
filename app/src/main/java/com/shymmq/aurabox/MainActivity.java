@@ -7,7 +7,8 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     private String TAG = "aurabox-debug";
-AuraboxService service;
+    AuraboxService service;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,10 +19,10 @@ AuraboxService service;
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AuraboxBitmap auraboxBitmap = new AuraboxBitmap(Color.BLUE);
-                for (Color i : Color.values()) {
-                    auraboxBitmap.setPixel(i.getCode(),0,i);
-                }
+                AuraboxBitmap auraboxBitmap = new AuraboxBitmap("2134560721426375104234560721346375104263560721345675104263750721345607104263751021345607214263751042");
+//                for (Color i : Color.values()) {
+//                    auraboxBitmap.setPixel(i.getCode(),0,i);
+//                }
                 service.send(auraboxBitmap);
             }
         });

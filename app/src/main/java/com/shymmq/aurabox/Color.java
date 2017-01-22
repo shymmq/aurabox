@@ -5,6 +5,7 @@ package com.shymmq.aurabox;
  */
 
 public enum Color {
+
     BLACK(0),
     RED(1),
     GREEN(2),
@@ -20,7 +21,18 @@ public enum Color {
         this.code = code;
     }
 
+    public static Color fromCode(int code) {
+        for (Color c:Color.values()){
+            if(c.getCode()==code){
+                return c;
+            }
+        }
+        throw new UnsupportedOperationException("Unknown color code "+code);
+    }
+
     public int getCode() {
         return code;
     }
+
+
 }
