@@ -30,7 +30,6 @@ public class AuraboxBitmap {
                 i += 2;
             }
         }
-
     }
 
     public AuraboxBitmap(boolean[][] cells) {
@@ -38,9 +37,11 @@ public class AuraboxBitmap {
     }
 
     public AuraboxBitmap(boolean[][] cells, int startX, int startY) {
+        int width = cells[0].length;
+        int height = cells.length;
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
-                setPixel(x, y, cells[y + startY][x + startX]);
+                setPixel(x, y, cells[(y + startY) % height][(x + startX) % width]);
             }
         }
     }
