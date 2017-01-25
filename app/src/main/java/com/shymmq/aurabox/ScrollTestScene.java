@@ -10,16 +10,16 @@ import java.util.TimerTask;
 public class ScrollTestScene implements Scene {
     private static final long FPS = 30;
     private final int WIDTH = 30;
-    private boolean[][] cells = new boolean[10][WIDTH];
-    private Timer timer = new Timer();
+    private Timer timer;
     private int scroll = 0;
+    private AuraboxBitmap bitmap = new AuraboxBitmap(Color.BLACK, WIDTH, 10);
 
     @Override
     public Scene start(final AuraboxService service) {
+        timer = new Timer();
         for (int i = 0; i < WIDTH; i++) {
-            double sin = Math.sin(i * 2 * Math.PI / WIDTH);
-            double height = (sin + 1) * 9 / 2;
-            cells[(int) Math.round(height)][i] = true;
+            bitmap.setPixel(i, getHeight(i), Color.WHITE);
+            bitmap.setPixel(i, getHeight(i+WIDTH/2), Color.CYAN);
 //            int top = (int) Math.ceil(height);
 //            int bot = (int) Math.floor(height);
 //            cells[bot][i] = true;
@@ -28,11 +28,17 @@ public class ScrollTestScene implements Scene {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                service.send(new AuraboxBitmap(cells, scroll, 0));
+                service.send(bitmap.subBitmap(scroll, 0));
                 scroll++;
             }
         }, 0, 1000 / FPS);
         return this;
+    }
+
+    private int getHeight(int i) {
+        double sin = Math.sin(i * 2 * Math.PI / WIDTH);
+        double height = (sin + 1) * 9 / 2;
+        return (int) Math.round(height);
     }
 
     @Override

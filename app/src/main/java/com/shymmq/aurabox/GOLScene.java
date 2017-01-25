@@ -15,15 +15,18 @@ public class GOLScene implements Scene {
     private static final int HEIGHT = 30;
     private static final int SPAWN_RATE = 19 * 2;       //min 19
     private static final long GEN_PERIOD = 200;
+    private static final int START_Y = HEIGHT / 2 - 5;
+    private static final int START_X = WIDTH / 2 - 5;
     private boolean[][] cells = new boolean[HEIGHT][WIDTH];
     private boolean[][] newCells = new boolean[HEIGHT][WIDTH];
-    private Timer timer = new Timer();
+    private Timer timer;
     private int generation = 0;
 
     @Override
     public GOLScene start(final AuraboxService service) {
         AuraboxBitmap bitmap = new AuraboxBitmap(cells);
         service.send(bitmap);
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -43,7 +46,9 @@ public class GOLScene implements Scene {
                     spawnInvertedGlider(WIDTH - 3, 0);
                 }
                 generation++;
-                service.send(new AuraboxBitmap(cells, HEIGHT / 2 - 5, WIDTH / 2 - 5));
+                AuraboxBitmap auraboxBitmap = new AuraboxBitmap(cells);
+
+                service.send(auraboxBitmap.subBitmap(START_X, START_Y));
             }
         }, 0, GEN_PERIOD);
         return this;

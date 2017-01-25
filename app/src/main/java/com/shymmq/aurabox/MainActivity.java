@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
         scenes.add(new ColorTestScene());
         scenes.add(new StringDisplayScene());
         scenes.add(new ScrollTestScene());
+        scenes.add(new LineScene());
+        scenes.add(new FontTestScene(this));
         container = (ViewGroup) findViewById(R.id.container);
 
         service = new AuraboxService(this);
@@ -51,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (currentScene != null) {
+            currentScene.stop();
+        }
         service.smoothBluetooth.stop();
     }
 
